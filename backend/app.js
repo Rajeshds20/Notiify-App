@@ -4,16 +4,18 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 const dotenv = require('dotenv')
 const Authentication = require('./middleware/Authentication')
+const AdminAuth = require('./middleware/AdminAuth')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('./models/User')
+const Note = require('./models/Note')
 
 // config dotenv
 dotenv.config()
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB Connected'))
+    .then(() => console.log('Database Connected'))
 
 // Initialize express app
 const app = express()
@@ -22,7 +24,8 @@ app.use(cors())
 
 const port = process.env.port || 5000;
 
-app.get('/', (req, res) => res.send('Notes App Server Running...'))
+app.get('/', (req, res) => res.send('Notiify App Server Running...'))
+
 
 // New User - Register User
 app.post('/user/new', async (req, res) => {
@@ -36,16 +39,17 @@ app.post('/user/new', async (req, res) => {
         }
 
         // Create new user
+        const hashedPassword = await bcrypt.hash(password, 10)
         const newUser = await User({
             mailid: mailid,
-            password: bcrypt.hashSync(password, 10),
+            password: hashedPassword
         })
 
         // Save user
         await newUser.save()
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1d' })
 
-        res.json({ message: "User Created Successfully", token: token })
+        res.json({ message: "User Created Successfully", token: token, user: newUser })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
@@ -64,7 +68,7 @@ app.post('/user/login', async (req, res) => {
         }
 
         // Check if password is correct
-        if (!bcrypt.compareSync(password, user.password)) {
+        if (!bcrypt.compare(password, user.password)) {
             return res.status(400).json({ message: "Password is incorrect" })
         }
 
@@ -100,15 +104,190 @@ app.post('/notes/new', async (req, res) => {
     }
 })
 
-// Get all Notes of the user
+// Get all notes of a user
 app.get('/notes/all', Authentication, async (req, res) => {
     try {
         const user = await User.findById(req.user._id).populate('notes')
         res.json({ notes: user.notes })
-    } catch (error) {
+    }
+    catch (error) {
         res.status(500).json({ message: error.message })
     }
 })
 
+// Update a note by id
+app.patch('/notes/:id', Authentication, async (req, res) => {
+    try {
+        const noteId = req.params.id
+        const { title, content } = req.body
+        const note = Note.findById(noteId)
+        if(!note) {
+            return res.status(404).json({ message: "Note not found" })
+        }
+        note.title = title
+        note.content = content
+        await note.save()
+        res.json({ message: "Note updated successfully" })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+// Delete a note by id
+app.delete('/notes/:id', Authentication, async (req, res) => {
+    try {
+        const noteId = req.params.id
+        const note = Note.findById(noteId)
+        if(!note) {
+            return res.status(404).json({ message: "Note not found" })
+        }
+        await note.delete()
+        res.json({ message: "Note deleted successfully" })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// Delete all notes of a user
+app.delete('/notes/all', Authentication, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id)
+        user.notes = []
+        await user.save()
+        res.json({ message: "All notes deleted successfully" })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// Update Order of user's notes
+app.patch('/notes/update', Authentication, async (req, res) => {
+    try {
+        const { notes } = req.body
+        const user = await User.findById(req.user._id)
+        user.notes = notes
+        await user.save()
+        res.json({ message: "Notes order updated successfully" })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// API's for Admin Panel
+
+// Get all users
+app.get('/admin/users', AdminAuth, async (req, res) => {
+    try {
+        const users = await User.find()
+        res.json({ users: users })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// Get all notes
+app.get('/admin/notes', AdminAuth, async (req, res) => {
+    try {
+        const notes = await Note.find()
+        res.json({ notes: notes })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// Delete a user by id
+app.delete('/admin/users/:id', AdminAuth, async (req, res) => {
+    try {
+        const userId = req.params.id
+        const user = await User.findById(userId)
+        if(!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+        await user.delete()
+        res.json({ message: "User deleted successfully" })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// Delete a note by id
+app.delete('/admin/notes/:id', AdminAuth, async (req, res) => {
+    try {
+        const noteId = req.params.id
+        const note = Note.findById(noteId)
+        if(!note) {
+            return res.status(404).json({ message: "Note not found" })
+        }
+        await User.findByIdAndUpdate(note.user, { $pull: { notes: noteId } })
+        await note.delete()
+        res.json({ message: "Note deleted successfully" })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// Get all notes of a user
+app.get('/admin/users/:id', AdminAuth, async (req, res) => {
+    try {
+        const userId = req.params.id
+        const user = await User.findById(userId).populate('notes')
+        if(!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+        res.json({ notes: user.notes })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// Add new Admin
+app.post('/admin/new', async (req, res) => {
+    try {
+        const { mailid, password } = req.body
+        const admin = admin.findOne({ mailid: mailid })
+        if(admin) {
+            res.status(400).json({ message: "Admin already exists" })
+        }
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const newAdmin = await Admin({
+            mailid: mailid,
+            password: hashedPassword
+        })
+        await newAdmin.save()
+        res.json({ message: "Admin created successfully" })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+//Admin Login - Authentication
+app.post('/admin/login', async (req, res) => {
+    try {
+        const { mailid, password } = req.body
+        const admin = await Admin.findOne({ mailid: mailid })
+        if(!admin) {
+            return res.status(400).json({ message: "Admin does not exist" })
+        }
+        if(!bcrypt.compare(password, admin.password)) {
+            return res.status(400).json({ message: "Password is incorrect" })
+        }
+        const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '1d' })
+        res.json({ message: "Admin Logged In Successfully", token: token })
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message })
+    }
+})
+
+// Start server
+app.listen(port, () => console.log(`Notiify app listening on port ${port}!`))

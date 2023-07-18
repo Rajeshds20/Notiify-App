@@ -1,15 +1,15 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const Admin = require('../models/Admin');
 
-const Authentication = async (req, res, next) => {
+const AdminAuth = async (req, res, next) => {
     try {
         const token = await req.headers.get('Authorization').replace('Bearer ', '');
         const decoded = await jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findOne({ _id: decoded.id });
-        if (!user) {
-            return res.send(403).json({ message: "User not found" });
+        const admin = await Admin.findOne({ _id: decoded.id });
+        if (!admin) {
+            return res.send(403).json({ message: "Admin not found" });
         }
-        req.user = user;
+        req.admin = admin;
         next();
     }
     catch (e) {
@@ -17,4 +17,4 @@ const Authentication = async (req, res, next) => {
     }
 }
 
-module.exports = Authentication;
+module.exports = AdminAuth;

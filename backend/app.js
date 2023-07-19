@@ -121,7 +121,7 @@ app.patch('/notes/:id', Authentication, async (req, res) => {
         const noteId = req.params.id
         const { title, content } = req.body
         const note = Note.findById(noteId)
-        if(!note) {
+        if (!note) {
             return res.status(404).json({ message: "Note not found" })
         }
         note.title = title
@@ -139,7 +139,7 @@ app.delete('/notes/:id', Authentication, async (req, res) => {
     try {
         const noteId = req.params.id
         const note = Note.findById(noteId)
-        if(!note) {
+        if (!note) {
             return res.status(404).json({ message: "Note not found" })
         }
         await note.delete()
@@ -206,7 +206,7 @@ app.delete('/admin/users/:id', AdminAuth, async (req, res) => {
     try {
         const userId = req.params.id
         const user = await User.findById(userId)
-        if(!user) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         }
         await user.delete()
@@ -222,7 +222,7 @@ app.delete('/admin/notes/:id', AdminAuth, async (req, res) => {
     try {
         const noteId = req.params.id
         const note = Note.findById(noteId)
-        if(!note) {
+        if (!note) {
             return res.status(404).json({ message: "Note not found" })
         }
         await User.findByIdAndUpdate(note.user, { $pull: { notes: noteId } })
@@ -239,7 +239,7 @@ app.get('/admin/users/:id', AdminAuth, async (req, res) => {
     try {
         const userId = req.params.id
         const user = await User.findById(userId).populate('notes')
-        if(!user) {
+        if (!user) {
             return res.status(404).json({ message: "User not found" })
         }
         res.json({ notes: user.notes })
@@ -254,7 +254,7 @@ app.post('/admin/new', async (req, res) => {
     try {
         const { mailid, password } = req.body
         const admin = admin.findOne({ mailid: mailid })
-        if(admin) {
+        if (admin) {
             res.status(400).json({ message: "Admin already exists" })
         }
         const hashedPassword = await bcrypt.hash(password, 10)
@@ -275,10 +275,10 @@ app.post('/admin/login', async (req, res) => {
     try {
         const { mailid, password } = req.body
         const admin = await Admin.findOne({ mailid: mailid })
-        if(!admin) {
+        if (!admin) {
             return res.status(400).json({ message: "Admin does not exist" })
         }
-        if(!bcrypt.compare(password, admin.password)) {
+        if (!bcrypt.compare(password, admin.password)) {
             return res.status(400).json({ message: "Password is incorrect" })
         }
         const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '1d' })

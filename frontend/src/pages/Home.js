@@ -5,7 +5,7 @@ import { AppBar, Container, Fab, IconButton, Toolbar, Typography, Paper, TextFie
 // import { Add as AddIcon } from "@mui/icons-material";
 import { Card, CardContent, CardActions } from "@mui/material";
 // import { Delete as DeleteIcon } from "@mui/icons-material";
-import { BsFillPlusSquareFill, BsPencilSquare, BsFillBookmarkCheckFill, BsFillPersonFill } from "react-icons/bs";
+import { BsFillPlusSquareFill, BsPencilSquare, BsFillBookmarkCheckFill } from "react-icons/bs";
 import { AiFillDelete } from "react-icons/ai";
 
 function Login() {

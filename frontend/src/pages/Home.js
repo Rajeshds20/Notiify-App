@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppBar, Container, Fab, IconButton, Toolbar, Typography, Paper, TextField } from "@mui/material";
+import { AppBar, Container, Fab, IconButton, Toolbar, Typography, Paper, TextField, TableFooter } from "@mui/material";
 // import { Add as AddIcon } from "@mui/icons-material";
 import { Card, CardContent, CardActions } from "@mui/material";
 // import { Delete as DeleteIcon } from "@mui/icons-material";
@@ -281,6 +281,16 @@ function Login() {
                         )}
                     </div>
                 </Container>
+                <br />
+                <br />
+                <br />
+                <br />
+                <br />
+                <TableFooter style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+                    <Typography variant="body2" color="textSecondary" align="center">
+                        Made with ❤️ by <a href="https://linkedin.com/in/devangamsajjarajesh" target="_blank" rel="noreferrer">Rajesh</a>
+                    </Typography>
+                </TableFooter>
             </div>
             {/* <h1>Home Page</h1>
             <br />

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Typography, Button, TextField, Box, Paper, Link } from "@mui/material";
+import { Container, Typography, Button, TextField, Box, Paper, Link, TableFooter } from "@mui/material";
 
 
 function Register(props) {
@@ -109,6 +109,16 @@ function Register(props) {
             <Typography variant="h6" gutterBottom style={{ textAlign: "center" }}>
                 Already have an account?  <Link href="/login"> Login</Link>
             </Typography>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <TableFooter style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+                <Typography variant="body2" color="textSecondary" align="center">
+                    Made with ❤️ by <a href="https://linkedin.com/in/devangamsajjarajesh" target="_blank" rel="noreferrer">Rajesh</a>
+                </Typography>
+            </TableFooter>
         </div>
 
         // <div>

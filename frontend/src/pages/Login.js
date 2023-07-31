@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Typography, Button, TextField, Box, Link, Paper } from "@mui/material";
+import { Container, Typography, Button, TextField, Box, Link, Paper, TableFooter } from "@mui/material";
 
 
 function Login() {
@@ -197,6 +197,15 @@ function Login() {
                 Don't have an account?  <Link href="/register"> Register</Link>
             </Typography>
             <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <TableFooter style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+                <Typography variant="body2" color="textSecondary" align="center">
+                    Made with ❤️ by <a href="https://linkedin.com/in/devangamsajjarajesh" target="_blank" rel="noreferrer">Rajesh</a>
+                </Typography>
+            </TableFooter>
             {/* <h1>Login</h1>
             <br />
             <h3

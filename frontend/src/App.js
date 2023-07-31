@@ -1,24 +1,43 @@
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
 import './App.css';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+import LoginPage from './pages/Login';
+import RegisterPage from './pages/Register';
+import HomePage from './pages/Home';
+import NotFoundPage from './pages/NotFound';
 
 function App() {
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (localStorage.getItem('token') !== null) {
+      setUser(localStorage.getItem('token'));
+    }
+  }, []);
+
+  const routes = createBrowserRouter([
+    {
+      path: '/',
+      element: <HomePage user={user} />,
+    },
+    {
+      path: '/login',
+      element: <LoginPage user={user} setUser={setUser} />,
+    },
+    {
+      path: '/register',
+      element: <RegisterPage user={user} setUser={setUser} />,
+    },
+    {
+      path: '/*',
+      element: <NotFoundPage />,
+    }
+  ]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <RouterProvider router={routes} />
   );
 }
 

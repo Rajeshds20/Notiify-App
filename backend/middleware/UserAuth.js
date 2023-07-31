@@ -3,8 +3,12 @@ const User = require('../models/User');
 
 const Authentication = async (req, res, next) => {
     try {
-        const token = await req.headers.get('Authorization').replace('Bearer ', '');
-        const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+        const { authorization = '' } = req.headers;
+        const [bearer, token] = authorization?.split(' ');
+        if (!authorization || !token) {
+            return res.status(401).send('Invalid token');
+        }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findOne({ _id: decoded.id });
         if (!user) {
             return res.send(403).json({ message: "User not found" });
@@ -13,7 +17,7 @@ const Authentication = async (req, res, next) => {
         next();
     }
     catch (e) {
-        res.status(401).json({ message: "Please Authenticate" });
+        res.status(401).json({ error: e.message, message: "Not Authenticated" });
     }
 }
 

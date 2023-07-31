@@ -9,11 +9,13 @@ const AdminAuth = async (req, res, next) => {
         if (!admin) {
             return res.send(403).json({ message: "Admin not found" });
         }
-        req.admin = admin;
-        next();
+        else {
+            req.admin = admin;
+            next();
+        }
     }
     catch (e) {
-        res.status(401).json({ message: "Please Authenticate" });
+        res.status(401).json({ message: "Not Authenticated" });
     }
 }
 

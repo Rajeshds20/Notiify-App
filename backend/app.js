@@ -3,12 +3,14 @@ const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
 const dotenv = require('dotenv')
-const Authentication = require('./middleware/Authentication')
+const Authentication = require('./middleware/UserAuth')
 const AdminAuth = require('./middleware/AdminAuth')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('./models/User')
 const Note = require('./models/Note')
+const Admin = require('./models/Admin')
+// const bodyParser = require('body-parser')
 
 // config dotenv
 dotenv.config()
@@ -21,23 +23,27 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 const app = express()
 app.use(express.json())
 app.use(cors())
+// app.use(bodyParser.json())
 
 const port = process.env.port || 5000;
 
 app.get('/', (req, res) => res.send('Notiify App Server Running...'))
 
 
+// API's for User
+
 // New User - Register User
-app.post('/user/new', async (req, res) => {
+app.post('/user/register', async (req, res) => {
     try {
         const { mailid, password } = req.body
-
+        if (!mailid || !password) {
+            return res.status(400).json({ message: "Please enter all fields" })
+        }
         // Check if user exists
         const user = await User.findOne({ mailid: mailid })
         if (user) {
-            return res.status(400).json({ message: "User already exists" })
+            return res.status(403).json({ message: "User already exists" })
         }
-
         // Create new user
         const hashedPassword = await bcrypt.hash(password, 10)
         const newUser = await User({
@@ -63,12 +69,18 @@ app.post('/user/login', async (req, res) => {
         // Check if user exists
         const user = await User.findOne({ mailid: mailid })
 
+        if (!mailid || !password) {
+            return res.status(400).json({ message: "Please enter all fields" })
+        }
+
         if (!user) {
             return res.status(400).json({ message: "User does not exist" })
         }
 
+        console.log(user.password, password);
         // Check if password is correct
-        if (!bcrypt.compare(password, user.password)) {
+        const check = await bcrypt.compare(password, user.password)
+        if (!check) {
             return res.status(400).json({ message: "Password is incorrect" })
         }
 
@@ -81,7 +93,7 @@ app.post('/user/login', async (req, res) => {
 })
 
 // Create a new Note
-app.post('/notes/new', async (req, res) => {
+app.post('/notes/new', Authentication, async (req, res) => {
     try {
         const { title, content } = req.body
 
@@ -96,9 +108,10 @@ app.post('/notes/new', async (req, res) => {
         user.notes.push(newNote._id)
 
         // Save note
-        await newNote.save()
+        await newNote.save();
+        await user.save();
 
-        res.json({ message: "Note Created Successfully" })
+        res.json({ message: "Note Created Successfully", newNote })
     } catch (error) {
         res.status(500).json({ message: error.message })
     }
@@ -116,7 +129,7 @@ app.get('/notes/all', Authentication, async (req, res) => {
 })
 
 // Update a note by id
-app.patch('/notes/:id', Authentication, async (req, res) => {
+app.put('/notes/:id', Authentication, async (req, res) => {
     try {
         const noteId = req.params.id
         const { title, content } = req.body
@@ -124,9 +137,7 @@ app.patch('/notes/:id', Authentication, async (req, res) => {
         if (!note) {
             return res.status(404).json({ message: "Note not found" })
         }
-        note.title = title
-        note.content = content
-        await note.save()
+        await Note.findByIdAndUpdate(noteId, { title: title, content: content })
         res.json({ message: "Note updated successfully" })
     }
     catch (error) {
@@ -142,7 +153,7 @@ app.delete('/notes/:id', Authentication, async (req, res) => {
         if (!note) {
             return res.status(404).json({ message: "Note not found" })
         }
-        await note.delete()
+        await Note.deleteOne(note);
         res.json({ message: "Note deleted successfully" })
     }
     catch (error) {
@@ -253,17 +264,20 @@ app.get('/admin/users/:id', AdminAuth, async (req, res) => {
 app.post('/admin/new', async (req, res) => {
     try {
         const { mailid, password } = req.body
-        const admin = admin.findOne({ mailid: mailid })
-        if (admin) {
-            res.status(400).json({ message: "Admin already exists" })
+        const admin = await Admin.findOne({ mailid: mailid })
+        console.log(admin);
+        if (!admin) {
+            const hashedPassword = await bcrypt.hash(password, 10)
+            const newAdmin = new Admin({
+                mailid: mailid,
+                password: hashedPassword
+            })
+            await newAdmin.save()
+            res.json({ message: "Admin created successfully" })
         }
-        const hashedPassword = await bcrypt.hash(password, 10)
-        const newAdmin = await Admin({
-            mailid: mailid,
-            password: hashedPassword
-        })
-        await newAdmin.save()
-        res.json({ message: "Admin created successfully" })
+        else {
+            res.status(400).json({ message: "Admin already exists", admin: admin })
+        }
     }
     catch (error) {
         res.status(500).json({ message: error.message })

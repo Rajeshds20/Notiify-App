@@ -31,8 +31,12 @@ function Login() {
                     if (res.status === 200) {
                         return res.json();
                     }
-                    else {
-                        throw new Error('Invalid Credentials');
+                    else if (res.status === 401) {
+                        // alert(res);
+                        alert('Login Expired');
+                        localStorage.removeItem('token');
+                        navigate('/login');
+                        window.location.reload();
                     }
                 })
                 .then(data => {
@@ -40,8 +44,9 @@ function Login() {
                     setMyNotes(data.notes);
                 })
                 .catch(err => {
+                    // alert(err);
                     console.log(err);
-                    alert('Login Expired');
+                    alert('Log In Failed');
                     localStorage.removeItem('token');
                     navigate('/login');
                     window.location.reload();

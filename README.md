@@ -2,12 +2,18 @@
 
 <img src="https://github.com/Rajeshds20/Notiify-App/blob/main/frontend/public/favicon.ico" alt="Notiify App" width="100"/>
 
-![React](https://img.shields.io/badge/React-JS-blue)
-![Node.js](https://img.shields.io/badge/Node.js-JS-green)
-![Express.js](https://img.shields.io/badge/Express.js-JS-orange)
-![MongoDB](https://img.shields.io/badge/MongoDB-DB-brightgreen)
-![JWT](https://img.shields.io/badge/JWT-Security-yellow)
-![Mongoose](https://img.shields.io/badge/Mongoose-ODM-red)
+## Tech Stack :
+<div align="center">
+
+[<img src="https://th.bing.com/th?id=OSK.0f748c6f3d8bc1a6ec9bcac171056e98&w=46&h=46&c=11&rs=1&qlt=80&o=6&dpr=1.3&pid=SANGAM" alt="React" width="50" height="50">](https://reactjs.org/)
+[<img src="https://th.bing.com/th?id=ODLS.3891574d-ed49-4720-9a83-edb0952d05a3&w=32&h=32&qlt=90&pcl=fffffa&o=6&cb=1014&pid=1.2" alt="Node.js" width="50" height="50">](https://nodejs.org/)
+[<img src="https://th.bing.com/th?id=ODLS.7ee38d86-4472-452b-806c-fd7945e59518&w=32&h=32&qlt=90&pcl=fffffa&o=6&cb=1014&pid=1.2" alt="Express.js" width="50" height="50">](https://expressjs.com/)
+[<img src="https://th.bing.com/th?id=ODLS.5af66f33-4a74-47c5-881c-bbc1b90a1772&w=32&h=32&qlt=90&pcl=fffffa&o=6&cb=1014&pid=1.2" alt="MongoDB" width="50" height="50">](https://www.mongodb.com/)
+[<img src="https://th.bing.com/th?id=ODLS.1087b558-ec95-42e8-8bde-f0c3bd1b328e&w=32&h=32&qlt=90&pcl=fffffa&o=6&cb=1014&pid=1.2" alt="JWT" width="50" height="50">](https://jwt.io/)
+[<img src="https://th.bing.com/th?id=ODLS.35574526-0081-491c-8a32-2722afa5aede&w=32&h=32&qlt=90&pcl=fffffa&o=6&cb=1014&pid=1.2" alt="Mongoose" width="50" height="50">](https://mongoosejs.com/)
+
+</div>
+
 
 This application allows users to create, update, delete, and view notes. Users can register, log in, and perform various operations on their notes.
 

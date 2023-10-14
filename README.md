@@ -1,6 +1,6 @@
 # Notiify App
 
-<img src="https://github.com/Rajeshds20/Notiify-App/blob/main/frontend/public/favicon.ico" alt="Notiify App" width="125"/>
+<img src="https://github.com/Rajeshds20/Notiify-App/blob/main/frontend/public/favicon.ico" alt="Notiify App" width="100"/>
 
 ![React](https://img.shields.io/badge/React-JS-blue)
 ![Node.js](https://img.shields.io/badge/Node.js-JS-green)
@@ -13,10 +13,17 @@ This application allows users to create, update, delete, and view notes. Users c
 
 ## Features
 
-- User Authentication and Authorization
-- Create, Update, Delete, and View Notes
-- Intuitive User Interface
-- Responsive Design
+- **User authentication and authorization:**
+  - Secure user authentication system to protect user data and ensure privacy.
+  
+- **Create, update, and delete notes:**
+  - Full CRUD (Create, Read, Update, Delete) functionality for managing notes effectively.
+  
+- **Intuitive user interface:**
+  - A user-friendly interface designed for a seamless and pleasant user experience.
+
+- **Responsive Design**
+  - Responsive Design for fitting in both mobile and desktop devices.
 
 
 ## Setup
@@ -33,10 +40,21 @@ This application allows users to create, update, delete, and view notes. Users c
    ```
    
 3. **Install dependencies:**
+
+   ##### Frontend :
+
    ```
    cd frontend
    npm install
    ```
+
+   ##### Backend :
+
+   ```
+   cd backend
+   npm install
+   ```
+   
 
 4. **Start the development server:**
    ```
@@ -48,6 +66,12 @@ This application allows users to create, update, delete, and view notes. Users c
 
 6. Open your browser and access the app at http://localhost:3000.
 
+
+## 🚀 Live Application
+
+Explore the live version of the app and experience its features in action!
+
+[<img src="https://github.com/Rajeshds20/Notiify-App/blob/main/frontend/public/favicon.ico" alt="Notiify App" width="20"/> Notiify App](https://notiify-maker.web.app/)
 
 
 ## Usage
@@ -78,16 +102,6 @@ This application allows users to create, update, delete, and view notes. Users c
 - [MongoDB](https://www.mongodb.com/): A NoSQL database for storing flexible, JSON-like documents.
 - [JSON Web Tokens (JWT)](https://jwt.io/): A standard for securely transmitting information between parties as JSON objects.
 
-## Features
-
-- **User authentication and authorization:**
-  - Secure user authentication system to protect user data and ensure privacy.
-  
-- **Create, update, and delete notes:**
-  - Full CRUD (Create, Read, Update, Delete) functionality for managing notes effectively.
-  
-- **Intuitive user interface:**
-  - A user-friendly interface designed for a seamless and pleasant user experience.
 
 ## Contributors
 

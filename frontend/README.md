@@ -1,5 +1,5 @@
-# Admin Dashboard and Bot Info Website 
+# Notiify App
 
-### Access here...👇🏻👇🏻👇🏻
+Live link of application:
 
-## https://weatherbotdashboardr.web.app/
+# https://notiify-maker.web.app 

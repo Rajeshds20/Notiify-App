@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AppBar, Container, Fab, IconButton, Toolbar, Typography, Paper, TextField, TableFooter } from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import { AppBar, Container, Fab, IconButton, Toolbar, Typography, Paper, TextField, TableFooter, Button } from "@mui/material";
 // import { Add as AddIcon } from "@mui/icons-material";
 import { Card, CardContent, CardActions } from "@mui/material";
 // import { Delete as DeleteIcon } from "@mui/icons-material";
@@ -10,17 +10,24 @@ import { AiFillDelete } from "react-icons/ai";
 
 function Login() {
 
-    const BackendURL = 'https://to-do-list-backend-z3hx.onrender.com';
+    const API_URL = process.env.REACT_APP_API_URL;
+
+    const [loggedIn, setLoggedIn] = useState(false);
+    const [myNotes, setMyNotes] = useState([]);
+    const [updating, setUpdating] = useState(null);
+    const [title, setTitle] = useState("");
+    const [content, setContent] = useState("");
 
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
     useEffect(() => {
         if (!token) {
-            navigate("/login");
+            setLoggedIn(false);
         }
         else {
-            fetch(`${BackendURL}/notes/all`, {
+            setLoggedIn(true);
+            fetch(`${API_URL}/notes/all`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,14 +62,9 @@ function Login() {
         }
     }, []);
 
-    const [myNotes, setMyNotes] = useState([]);
-    const [updating, setUpdating] = useState(null);
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
-
     const handleDelete = (note) => {
         setMyNotes(myNotes.filter((n) => n._id !== note._id));
-        fetch(`${BackendURL}/notes/${note._id}`, {
+        fetch(`${API_URL}/notes/${note._id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -70,8 +72,6 @@ function Login() {
             }
         })
     }
-
-
 
     const NoteCard = ({ note, setUpdating }) => {
         return (
@@ -150,7 +150,7 @@ function Login() {
                                 }
                                 else return n;
                             }));
-                            fetch(`${BackendURL}/notes/${note._id}`, {
+                            fetch(`${API_URL}/notes/${note._id}`, {
                                 method: 'PUT',
                                 headers: {
                                     'Content-Type': 'application/json',
@@ -184,119 +184,199 @@ function Login() {
 
     return (
         <div>
-            <div>
-                <AppBar position="static">
-                    <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="h4"><b>Notiify</b> App</Typography>
-                        <div>
-                            <button
-                                style={{
-                                    marginRight: "1rem",
-                                    backgroundColor: "transparent",
-                                    border: "none",
-                                    color: "white",
-                                    fontSize: "1.2rem",
-                                    cursor: "pointer"
-                                }}
-                                onClick={() => {
-                                    localStorage.removeItem('token');
-                                    navigate('/login');
-                                    window.location.reload();
-                                }}
-                            >Logout</button>
-                        </div>
-                    </Toolbar>
-                </AppBar>
-                <Container maxWidth="sm" sx={{ marginTop: "2rem", paddingBottom: "5rem" }}>
-                    <Paper sx={{ padding: "1rem" }}>
-                        <Typography variant="h5" gutterBottom>
-                            Create a Note
-                        </Typography>
-                        <TextField
-                            label="Title"
-                            variant="outlined"
-                            fullWidth
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            sx={{ marginBottom: "1rem" }}
-                        />
-                        <TextField
-                            label="Content"
-                            variant="outlined"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            value={content}
-                            onChange={(e) => setContent(e.target.value)}
-                            sx={{ marginBottom: "1rem" }}
-                        />
-                        <Fab color="primary" aria-label="add" onClick={() => {
-                            if (title === '' || content === '') {
-                                alert('Please fill all fields');
-                                return;
-                            }
-                            const note = {
-                                title,
-                                content
-                            };
-                            setMyNotes([...myNotes, { ...note, _id: 123456789 }]);
-                            fetch(`${BackendURL}/notes/new`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': 'Bearer ' + token
-                                },
-                                body: JSON.stringify(note),
-                            })
-                                .then(res => {
-                                    if (res.status === 200) {
-                                        return res.json();
-                                    }
-                                    else {
-                                        throw new Error('Invalid Credentials');
-                                    }
+            {loggedIn ?
+                (<div>
+                    <AppBar position="static">
+                        <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <Typography variant="h4"><b>Notiify</b> App</Typography>
+                            <div>
+                                <button
+                                    style={{
+                                        marginRight: "1rem",
+                                        backgroundColor: "transparent",
+                                        border: "none",
+                                        color: "white",
+                                        fontSize: "1.2rem",
+                                        cursor: "pointer"
+                                    }}
+                                    onClick={() => {
+                                        navigate('/notes');
+                                    }}
+                                >Buckets</button>
+                                <button
+                                    style={{
+                                        marginRight: "1rem",
+                                        backgroundColor: "transparent",
+                                        border: "none",
+                                        color: "white",
+                                        fontSize: "1.2rem",
+                                        cursor: "pointer"
+                                    }}
+                                    onClick={() => {
+                                        localStorage.removeItem('token');
+                                        navigate('/login');
+                                        window.location.reload();
+                                    }}
+                                >Logout</button>
+                            </div>
+                        </Toolbar>
+                    </AppBar>
+                    <Container maxWidth="sm" sx={{ marginTop: "2rem", paddingBottom: "5rem" }}>
+                        <Paper sx={{ padding: "1rem" }}>
+                            <Typography variant="h5" gutterBottom>
+                                Create a Note
+                            </Typography>
+                            <TextField
+                                label="Title"
+                                variant="outlined"
+                                fullWidth
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                sx={{ marginBottom: "1rem" }}
+                            />
+                            <TextField
+                                label="Content"
+                                variant="outlined"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                                sx={{ marginBottom: "1rem" }}
+                            />
+                            <Fab color="primary" aria-label="add" onClick={() => {
+                                if (title === '' || content === '') {
+                                    alert('Please fill all fields');
+                                    return;
+                                }
+                                const note = {
+                                    title,
+                                    content
+                                };
+                                setMyNotes([...myNotes, { ...note, _id: 123456789 }]);
+                                fetch(`${API_URL}/notes/new`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'Authorization': 'Bearer ' + token
+                                    },
+                                    body: JSON.stringify(note),
                                 })
-                                .then(data => {
-                                    console.log(data);
-                                    myNotes.forEach((n) => {
-                                        if (n._id === 123456789) {
-                                            n._id = data.newNote._id;
+                                    .then(res => {
+                                        if (res.status === 200) {
+                                            return res.json();
                                         }
+                                        else {
+                                            throw new Error('Invalid Credentials');
+                                        }
+                                    })
+                                    .then(data => {
+                                        console.log(data);
+                                        myNotes.forEach((n) => {
+                                            if (n._id === 123456789) {
+                                                n._id = data.newNote._id;
+                                            }
+                                        });
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                        alert('Invalid Credentials');
                                     });
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                    alert('Invalid Credentials');
-                                });
-                            setTitle('');
-                            setContent('');
-                        }}>
-                            <BsFillPlusSquareFill size={34} />
-                        </Fab>
-                    </Paper>
-                    <div sx={{ marginTop: "2rem" }}>
-                        {myNotes.map((note, index) => {
-                            if (note._id === updating) {
-                                return (<UpdateNoteCard key={index} note={note} setMyNotes={setMyNotes} setUpdating={setUpdating} myNotes={myNotes} />);
+                                setTitle('');
+                                setContent('');
+                            }}>
+                                <BsFillPlusSquareFill size={34} />
+                            </Fab>
+                        </Paper>
+                        <div sx={{ marginTop: "2rem" }}>
+                            {myNotes.map((note, index) => {
+                                if (note._id === updating) {
+                                    return (<UpdateNoteCard key={index} note={note} setMyNotes={setMyNotes} setUpdating={setUpdating} myNotes={myNotes} />);
+                                }
+                                else {
+                                    return (<NoteCard key={index} note={note} setUpdating={setUpdating} />);
+                                }
                             }
-                            else {
-                                return (<NoteCard key={index} note={note} setUpdating={setUpdating} />);
-                            }
-                        }
-                        )}
-                    </div>
-                </Container>
-                <br />
-                <br />
-                <br />
-                <br />
-                <br />
-                <TableFooter style={{ position: 'fixed', bottom: 0, width: '100%' }}>
-                    <Typography variant="body2" color="textSecondary" align="center">
-                        Made with ❤️ by <a href="https://linkedin.com/in/devangamsajjarajesh" target="_blank" rel="noreferrer">Rajesh</a>
-                    </Typography>
-                </TableFooter>
-            </div>
+                            )}
+                        </div>
+                    </Container>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <TableFooter style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+                        <Typography variant="body2" color="textSecondary" align="center">
+                            Made with ❤️ by <a href="https://linkedin.com/in/devangamsajjarajesh" target="_blank" rel="noreferrer">Rajesh</a>
+                        </Typography>
+                    </TableFooter>
+                </div>)
+                : (<div>
+                    <AppBar position="static">
+                        <Toolbar>
+                            <Typography variant="h6">Notify App</Typography>
+                            {/* Add any additional header elements or navigation here */}
+                        </Toolbar>
+                    </AppBar>
+
+                    {/* Main Content */}
+                    <Container>
+                        <Typography variant="h4" gutterBottom>
+                            Welcome to Notify App
+                        </Typography>
+                        <Typography variant="body1" paragraph>
+                            Notify App allows you to store notes securely and access them anywhere. Simply register or log in to get started!
+                        </Typography>
+
+                        {/* Login and Signup Buttons */}
+                        <Button variant="contained" color="primary"
+                            onClick={() => {
+                                navigate('/login');
+                            }}>
+                            Login
+                        </Button>
+                        <Button variant="outlined" color="primary" style={{ marginLeft: '10px' }}
+                            onClick={() => {
+                                navigate('/register');
+                            }}>
+                            Signup
+                        </Button>
+
+                        {/* Buckets Section */}
+                        <Typography variant="h5" gutterBottom style={{ marginTop: '20px' }}>
+                            Buckets
+                        </Typography>
+                        <Card>
+                            <CardContent>
+                                <Typography variant="body1">
+                                    Buckets feature allows you to store text or links. Use the provided code to retrieve your data.
+                                </Typography>
+                                {/* Add more details about Buckets if needed */}
+                            </CardContent>
+                        </Card>
+
+                        {/* Button to Navigate to Buckets Section */}
+                        <Button variant="contained" color="secondary" style={{ marginTop: '10px' }}
+                            onClick={() => {
+                                navigate('/notes');
+                            }}>
+                            Go to Buckets
+                        </Button>
+                    </Container>
+
+                    {/* Footer */}
+                    <Container style={{ marginTop: '20px' }}>
+                        <Typography variant="caption">
+                            Contact Us: <Link href="mailto:darajesh71@gmail.com">dsrajesh71@gmail.com</Link>
+                        </Typography>
+                        {/* Add more contact links or information */}
+                        <TableFooter style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+                            <Typography variant="body2" color="textSecondary" align="center">
+                                Made with ❤️ by <a href="https://linkedin.com/in/devangamsajjarajesh" target="_blank" rel="noreferrer">Rajesh</a>
+                            </Typography>
+                        </TableFooter>
+                    </Container>
+                </div>)}
             {/* <h1>Home Page</h1>
             <br />
             <br />

@@ -6,7 +6,8 @@ import { Container, Typography, Button, TextField, Box, Link, Paper, TableFooter
 
 function Login() {
 
-    const BackendURL = 'https://to-do-list-backend-z3hx.onrender.com';
+    // Load env variable REACT_APP_API_URL
+    const BackendURL = process.env.REACT_APP_API_URL;
 
     const navigate = useNavigate();
     const [section, setSection] = useState(0);

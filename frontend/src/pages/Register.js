@@ -5,7 +5,7 @@ import { Container, Typography, Button, TextField, Box, Paper, Link, TableFooter
 
 function Register(props) {
 
-    const BackendURL = 'https://to-do-list-backend-z3hx.onrender.com';
+    const BackendURL = process.env.REACT_APP_API_URL;
 
     const navigate = useNavigate();
 

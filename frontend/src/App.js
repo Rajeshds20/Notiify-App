@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import HomePage from './pages/Home';
-import NotesPage from './pages/Notes';
+import BucketPage from './pages/Bucket';
 import NotFoundPage from './pages/NotFound';
 
 function App() {
@@ -32,8 +32,8 @@ function App() {
       element: <RegisterPage user={user} setUser={setUser} />,
     },
     {
-      path: '/notes',
-      element: <NotesPage user={user} />,
+      path: '/bucket',
+      element: <BucketPage user={user} />,
     },
     {
       path: '/*',

@@ -200,7 +200,7 @@ function Login() {
                                         cursor: "pointer"
                                     }}
                                     onClick={() => {
-                                        navigate('/notes');
+                                        navigate('/bucket');
                                     }}
                                 >Buckets</button>
                                 <button
@@ -311,7 +311,8 @@ function Login() {
                         </Typography>
                     </TableFooter>
                 </div>)
-                : (<div>
+                :
+                (<div>
                     <AppBar position="static">
                         <Toolbar>
                             <Typography variant="h6">Notify App</Typography>
@@ -320,7 +321,7 @@ function Login() {
                     </AppBar>
 
                     {/* Main Content */}
-                    <Container>
+                    <Container style={{ marginTop: '20px', textAlign: 'center' }}>
                         <Typography variant="h4" gutterBottom>
                             Welcome to Notify App
                         </Typography>
@@ -329,26 +330,35 @@ function Login() {
                         </Typography>
 
                         {/* Login and Signup Buttons */}
-                        <Button variant="contained" color="primary"
-                            onClick={() => {
-                                navigate('/login');
-                            }}>
-                            Login
-                        </Button>
-                        <Button variant="outlined" color="primary" style={{ marginLeft: '10px' }}
-                            onClick={() => {
-                                navigate('/register');
-                            }}>
-                            Signup
-                        </Button>
+                        <div style={{ marginTop: '20px' }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => {
+                                    navigate('/login');
+                                }}
+                            >
+                                Login
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="primary"
+                                style={{ marginLeft: '10px' }}
+                                onClick={() => {
+                                    navigate('/register');
+                                }}
+                            >
+                                Signup
+                            </Button>
+                        </div>
 
                         {/* Buckets Section */}
-                        <Typography variant="h5" gutterBottom style={{ marginTop: '20px' }}>
+                        <Typography variant="h5" gutterBottom style={{ marginTop: '40px' }}>
                             Buckets
                         </Typography>
-                        <Card>
+                        <Card style={{ maxWidth: '600px', margin: 'auto', marginTop: '20px' }}>
                             <CardContent>
-                                <Typography variant="body1">
+                                <Typography variant="body1" paragraph>
                                     Buckets feature allows you to store text or links. Use the provided code to retrieve your data.
                                 </Typography>
                                 {/* Add more details about Buckets if needed */}
@@ -356,27 +366,32 @@ function Login() {
                         </Card>
 
                         {/* Button to Navigate to Buckets Section */}
-                        <Button variant="contained" color="secondary" style={{ marginTop: '10px' }}
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            style={{ marginTop: '30px' }}
                             onClick={() => {
-                                navigate('/notes');
-                            }}>
+                                navigate('/bucket');
+                            }}
+                        >
                             Go to Buckets
                         </Button>
                     </Container>
 
                     {/* Footer */}
-                    <Container style={{ marginTop: '20px' }}>
+                    <Container style={{ marginTop: '20px', textAlign: 'center' }}>
                         <Typography variant="caption">
-                            Contact Us: <Link href="mailto:darajesh71@gmail.com">dsrajesh71@gmail.com</Link>
+                            Contact : <Link href="mailto:darajesh71@gmail.com">dsrajesh71@gmail.com</Link>
                         </Typography>
                         {/* Add more contact links or information */}
-                        <TableFooter style={{ position: 'fixed', bottom: 0, width: '100%' }}>
+                        <TableFooter style={{ position: 'fixed', bottom: 0, width: '100%', textAlign: 'center' }}>
                             <Typography variant="body2" color="textSecondary" align="center">
                                 Made with ❤️ by <a href="https://linkedin.com/in/devangamsajjarajesh" target="_blank" rel="noreferrer">Rajesh</a>
                             </Typography>
                         </TableFooter>
                     </Container>
-                </div>)}
+                </div>
+                )}
             {/* <h1>Home Page</h1>
             <br />
             <br />

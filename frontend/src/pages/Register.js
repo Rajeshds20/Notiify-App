@@ -104,6 +104,9 @@ function Register(props) {
                 </Box>
             </Container>
             <br />
+            <Typography variant="h6" gutterBottom style={{ textAlign: "center" }}>
+                Go to <Link href="/">Home</Link>
+            </Typography>
             <br />
             {/* Suggest to login if already have account */}
             <Typography variant="h6" gutterBottom style={{ textAlign: "center" }}>

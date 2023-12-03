@@ -191,7 +191,11 @@ function Login() {
                     </Paper>
                 </Box>
             </Container>
+            {/* Go to home */}
             <br />
+            <Typography variant="h6" gutterBottom style={{ textAlign: "center" }}>
+                Go to <Link href="/">Home</Link>
+            </Typography>
             <br />
             {/* Suggest to Register */}
             <Typography variant="h6" gutterBottom style={{ textAlign: "center" }}>

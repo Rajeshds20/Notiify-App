@@ -31,6 +31,27 @@ This application allows users to create, update, delete, and view notes. Users c
 - **Responsive Design**
   - Responsive Design for fitting in both mobile and desktop devices.
 
+## Update 
+### Bucket Feature
+
+The Notiify App introduces a unique Bucket feature, allowing users to store and share text or links publicly. Here's how it works:
+
+- **Create Buckets:**
+  - Users can create personalized buckets to categorize and organize their shared content.
+
+- **Generate Access Codes:**
+  - Each bucket is associated with a unique access code, providing a secure way to access and share the contents of that specific bucket.
+
+- **Public Sharing:**
+  - Share the generated access code with others, enabling them to view the content of the bucket without requiring login credentials.
+
+- **Flexible Collaboration:**
+  - Users can collaborate effectively by creating and sharing buckets for various purposes, fostering seamless information sharing.
+
+- **Interactivity for URLs and Emails**
+  - Added interactivity and increased reader experience with added URLs and Emails feature
+
+This feature enhances the versatility of the Notiify App, making it a powerful tool for both personal and collaborative use.
 
 ## Setup
 
@@ -93,6 +114,12 @@ Explore the live version of the app and experience its features in action!
   
 4. **View your list of notes:**
    - Access a comprehensive list of all created notes for quick reference.
+
+5. **Create your own buckets:**
+   - Create your own buckets by giving the context and copy the generated code
+
+6. **Share Publicly:**
+   - Share the code publicly and retrive anywhere for easy collaboration 
 
 ## Technologies Used
 

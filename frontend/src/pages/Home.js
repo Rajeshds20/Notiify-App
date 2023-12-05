@@ -5,7 +5,7 @@ import { AppBar, Container, Fab, IconButton, Toolbar, Typography, Paper, TextFie
 // import { Add as AddIcon } from "@mui/icons-material";
 import { Card, CardContent, CardActions } from "@mui/material";
 // import { Delete as DeleteIcon } from "@mui/icons-material";
-import { BsFillPlusSquareFill, BsPencilSquare, BsFillBookmarkCheckFill } from "react-icons/bs";
+import { BsFillPlusSquareFill, BsPencilSquare, BsFillBookmarkCheckFill, BsClipboard2, BsFillClipboard2CheckFill, BsFillClipboard2Fill } from "react-icons/bs";
 import { AiFillDelete } from "react-icons/ai";
 
 function Login() {
@@ -17,6 +17,7 @@ function Login() {
     const [updating, setUpdating] = useState(null);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [copiedText, setCopiedText] = useState(false);
 
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
@@ -73,6 +74,82 @@ function Login() {
         })
     }
 
+    const handleCreation = () => {
+        if (title === '' || content === '') {
+            alert('Please fill all fields');
+            return;
+        }
+        const note = {
+            title,
+            content
+        };
+        setMyNotes([...myNotes, { ...note, _id: 123456789 }]);
+        fetch(`${API_URL}/notes/new`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(note),
+        })
+            .then(res => {
+                if (res.status === 200) {
+                    return res.json();
+                }
+                else {
+                    throw new Error('Invalid Credentials');
+                }
+            })
+            .then(data => {
+                console.log(data);
+                myNotes.forEach((n) => {
+                    if (n._id === 123456789) {
+                        n._id = data.newNote._id;
+                    }
+                });
+            })
+            .catch(err => {
+                console.log(err);
+                alert('Invalid Credentials');
+            });
+        setTitle('');
+        setContent('');
+    }
+
+    const replaceUrls = (text) => {
+
+        // Split the text into parts: URL and non-URL
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const emailRegex = /\S+@\S+\.\S+/g;
+
+        // Split the text into parts: URL, email, and non-URL/non-email
+        const parts = text?.split(/(\s+|\b)(https?:\/\/[^\s]+|\S+@\S+\.\S+)(\s+|\b)/);
+
+        // Map through the parts and render URLs and emails as anchors
+        const renderedText = parts?.map((part, index) => {
+            if (part && part.match(urlRegex)) {
+                // If it's a URL, render it as an anchor
+                // If it is a new line then insert break
+                return (
+                    <a key={index} href={part} style={{ fontSize: '18px', textAlign: 'center' }} target="_blank" rel="noopener noreferrer">
+                        {part}
+                    </a>
+                );
+            } else if (part && part.match(emailRegex)) {
+                // If it's an email, render it as a mailto link
+                return (
+                    <a key={index} href={`mailto:${part}`} style={{ fontSize: '18px', textAlign: 'center' }}>
+                        {part}
+                    </a>
+                );
+            } else {
+                // If it's neither a URL nor an email, render it as plain text
+                return part;
+            }
+        });
+        return renderedText;
+    }
+
     const NoteCard = ({ note, setUpdating }) => {
         return (
             <Card sx={{ marginBottom: "1rem" }}>
@@ -80,8 +157,9 @@ function Login() {
                     <Typography variant="h6" gutterBottom>
                         {note.title}
                     </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                        {note.content}
+                    <Typography variant="head2" color="textSecondary">
+                        {/* {note.content} */}
+                        {replaceUrls(note.content)}
                     </Typography>
                 </CardContent>
                 <CardActions>
@@ -99,6 +177,20 @@ function Login() {
                         }} color="primary">
                         <BsPencilSquare />
                     </IconButton>
+                    <IconButton
+                        title="Copy"
+                        onClick={() => {
+                            navigator.clipboard.writeText(note.content);
+                            setCopiedText(note);
+                            setTimeout(() => {
+                                setCopiedText(false);
+                            }, 1500);
+                            // alert('Text Copied');
+                        }} color="primary">
+                        {
+                            copiedText._id === note._id ? <BsFillClipboard2CheckFill /> : <BsClipboard2 />
+                        }
+                    </IconButton>
                 </CardActions>
             </Card >
         );
@@ -107,6 +199,50 @@ function Login() {
     const UpdateNoteCard = ({ note, setMyNotes, myNotes }) => {
         const [title1, setTitle1] = useState(note.title);
         const [content1, setContent1] = useState(note.content);
+
+        const handleUpdate = (event) => {
+            event.preventDefault();
+            if (title1 === '' || content1 === '') {
+                alert('Please fill all fields');
+                return;
+            }
+            // Update the previous note with the same id
+            setMyNotes(myNotes => myNotes.map((n) => {
+                if (n._id === updating) {
+                    return {
+                        ...n,
+                        title: title1,
+                        content: content1
+                    }
+                }
+                else return n;
+            }));
+            fetch(`${API_URL}/notes/${note._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ title: title1, content: content1 }),
+            })
+                .then(res => {
+                    if (res.status === 200) {
+                        return res.json();
+                    }
+                    else {
+                        throw new Error('Invalid Credentials');
+                    }
+                })
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(err => {
+                    console.log(err);
+                    alert('Invalid Credentials');
+                });
+            setUpdating(null);
+        }
+
         return (
             <Card sx={{ marginBottom: "1rem" }}>
                 <CardContent>
@@ -133,48 +269,7 @@ function Login() {
                 <CardActions>
                     <IconButton
                         title="Save"
-                        onClick={(event) => {
-                            event.preventDefault();
-                            if (title1 === '' || content1 === '') {
-                                alert('Please fill all fields');
-                                return;
-                            }
-                            // Update the previous note with the same id
-                            setMyNotes(myNotes => myNotes.map((n) => {
-                                if (n._id === updating) {
-                                    return {
-                                        ...n,
-                                        title: title1,
-                                        content: content1
-                                    }
-                                }
-                                else return n;
-                            }));
-                            fetch(`${API_URL}/notes/${note._id}`, {
-                                method: 'PUT',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'Authorization': 'Bearer ' + token
-                                },
-                                body: JSON.stringify({ title: title1, content: content1 }),
-                            })
-                                .then(res => {
-                                    if (res.status === 200) {
-                                        return res.json();
-                                    }
-                                    else {
-                                        throw new Error('Invalid Credentials');
-                                    }
-                                })
-                                .then(data => {
-                                    console.log(data);
-                                })
-                                .catch(err => {
-                                    console.log(err);
-                                    alert('Invalid Credentials');
-                                });
-                            setUpdating(null);
-                        }}>
+                        onClick={handleUpdate}>
                         <BsFillBookmarkCheckFill title="Save" color="green" />
                     </IconButton>
                 </CardActions>
@@ -244,47 +339,7 @@ function Login() {
                                 onChange={(e) => setContent(e.target.value)}
                                 sx={{ marginBottom: "1rem" }}
                             />
-                            <Fab color="primary" aria-label="add" onClick={() => {
-                                if (title === '' || content === '') {
-                                    alert('Please fill all fields');
-                                    return;
-                                }
-                                const note = {
-                                    title,
-                                    content
-                                };
-                                setMyNotes([...myNotes, { ...note, _id: 123456789 }]);
-                                fetch(`${API_URL}/notes/new`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'Authorization': 'Bearer ' + token
-                                    },
-                                    body: JSON.stringify(note),
-                                })
-                                    .then(res => {
-                                        if (res.status === 200) {
-                                            return res.json();
-                                        }
-                                        else {
-                                            throw new Error('Invalid Credentials');
-                                        }
-                                    })
-                                    .then(data => {
-                                        console.log(data);
-                                        myNotes.forEach((n) => {
-                                            if (n._id === 123456789) {
-                                                n._id = data.newNote._id;
-                                            }
-                                        });
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-                                        alert('Invalid Credentials');
-                                    });
-                                setTitle('');
-                                setContent('');
-                            }}>
+                            <Fab color="primary" aria-label="add" onClick={handleCreation}>
                                 <BsFillPlusSquareFill size={34} />
                             </Fab>
                         </Paper>
@@ -392,140 +447,6 @@ function Login() {
                     </Container>
                 </div>
                 )}
-            {/* <h1>Home Page</h1>
-            <br />
-            <br />
-            <h3>Add Notes</h3>
-            <form
-                onSubmit={(event) => {
-                    event.preventDefault();
-                    const data = new FormData(event.target);
-                    const title = data.get('title');
-                    const content = data.get('content');
-                    if (title === '' || content === '') {
-                        alert('Please fill all fields');
-                        return;
-                    }
-                    const note = {
-                        title,
-                        content
-                    };
-                    setMyNotes([...myNotes, note]);
-                    fetch('http://localhost:5000/notes/new', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': 'Bearer ' + token
-                        },
-                        body: JSON.stringify(note),
-                    })
-                        .then(res => {
-                            if (res.status === 200) {
-                                return res.json();
-                            }
-                            else {
-                                throw new Error('Invalid Credentials');
-                            }
-                        })
-                        .then(data => {
-                            console.log(data);
-                        })
-                        .catch(err => {
-                            console.log(err);
-                            alert('Invalid Credentials');
-                        });
-                }}
-            >
-                <label htmlFor="title">Title</label>
-                <input name="title" id="title" />
-                <label htmlFor="content">Content</label>
-                <input name="content" id="content" />
-                <button type="submit">Add Note</button>
-            </form>
-
-            <br />
-            <h2>Your Notes</h2>
-            <br />
-            {
-                myNotes.map((note, index) => {
-                    if (index === updating) {
-                        return (
-                            <form
-                                onSubmit={(event) => {
-                                    event.preventDefault();
-                                    const data = new FormData(event.target);
-                                    const title = data.get('title');
-                                    const content = data.get('content');
-                                    if (title === '' || content === '') {
-                                        alert('Please fill all fields');
-                                        return;
-                                    }
-                                    // Update the previous note with the same id
-                                    setMyNotes(myNotes.map((n) => {
-                                        if (n._id === note._id) {
-                                            return {
-                                                ...n,
-                                                title,
-                                                content
-                                            }
-                                        }
-                                        else return n;
-                                    }));
-                                    fetch(`http://localhost:5000/notes/${note._id}`, {
-                                        method: 'PUT',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'Authorization': 'Bearer ' + token
-                                        },
-                                        body: JSON.stringify({ title: title, content: content }),
-                                    })
-                                        .then(res => {
-                                            if (res.status === 200) {
-                                                return res.json();
-                                            }
-                                            else {
-                                                throw new Error('Invalid Credentials');
-                                            }
-                                        })
-                                        .then(data => {
-                                            console.log(data);
-                                        })
-                                        .catch(err => {
-                                            console.log(err);
-                                            alert('Invalid Credentials');
-                                        });
-                                    setUpdating(null);
-                                }}
-                                key={index}
-                            >
-                                <label htmlFor="title">Title</label>
-                                <input name="title" id="title" defaultValue={note.title} />
-                                <label htmlFor="content">Content</label>
-                                <input name="content" id="content" defaultValue={note.content} />
-                                <button type="submit">Update Note</button>
-                            </form>
-                        )
-                    }
-                    else {
-                        return (
-                            <div key={index}>
-                                <h3>{note.title}</h3>
-                                <p>{note.content}</p>
-                                <button
-                                    onClick={() => {
-                                        handleDelete(note);
-                                    }}
-                                >Delete</button>
-                                <button
-                                    onClick={() => {
-                                        setUpdating(index);
-                                    }}
-                                >Edit</button>
-                            </div>
-                        )
-                    }
-                })
-            } */}
         </div >
     );
 }

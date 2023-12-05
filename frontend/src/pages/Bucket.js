@@ -174,7 +174,7 @@ const BucketsPage = () => {
             .then(data => {
                 alert('Bucket Created')
                 console.log(data);
-                navigate(`/bucket?code=${data.bucket.code}`);
+                navigate(`/bucket/${data.bucket.code}`);
                 window.location.reload();
             })
             .catch(err => {
@@ -209,167 +209,69 @@ const BucketsPage = () => {
                 </Toolbar>
             </AppBar>
 
-
             {/* Add 2 features, creating a bucket and generating code, and retriving a bucket based on code */}
-            {(codeBucket && notexist) ? (
-                <Container maxWidth="md" style={{ textAlign: 'center', marginTop: '2rem' }}>
-                    {/* Code Bucket */}
-                    <Paper elevation={3} style={{ padding: '2rem', marginBottom: '2rem', borderRadius: '8px' }}>
-                        <Typography
-                            variant="h4"
-                            gutterBottom
-                            style={{ marginBottom: '1rem', color: '#1e90ff', fontSize: '2rem', fontWeight: 'bold' }}
-                        >
-                            Code
-                        </Typography>
-                        <Typography
-                            variant="outlined"
-                            fullWidth
-                            style={{ cursor: 'pointer', color: '#1e90ff', fontSize: '2rem', wordBreak: 'break-all' }}
-                            onClick={() => handleCopyCode(codeBucket?.code)}
-                        >
-                            {codeBucket?.code}
-                        </Typography>
-                        <Tooltip title="Copy Code" arrow>
-                            <IconButton onClick={() => handleCopyCode(codeBucket?.code)} color="black" style={{ marginTop: '-15px' }}>
-                                <BsClipboard size={25} />
-                            </IconButton>
-                        </Tooltip>
-                    </Paper>
 
-                    {/* Bucket Details */}
-                    <Paper elevation={3} style={{ padding: '2rem', marginBottom: '2rem', borderRadius: '8px' }}>
-                        <Typography variant="h4" gutterBottom style={{ color: '#1e90ff', fontSize: '1.8rem', fontWeight: 'bold' }}>
-                            Bucket Details
-                        </Typography>
-                        <Typography variant="h3" gutterBottom style={{ marginTop: '1rem' }}>
-                            {codeBucket?.title}
-                        </Typography>
-                        {/* <Typography variant="h4" gutterBottom style={{ marginTop: '1rem' }}>
-                            {codeBucket?.content}
-                        </Typography> */}
-                        {/* {isUrlOrEmail(codeBucket?.content) === 'url' ? (
-                            <Link style={{
-                                textDecoration: 'none',
-                                color: '#1e90ff',
-                                fontSize: '1.5rem',
-                                wordBreak: 'break-all',
-                            }} href={codeBucket?.content} target="_blank" rel="noopener noreferrer">
-                                {codeBucket?.content}
-                            </Link>
-                        ) : isUrlOrEmail(codeBucket?.content) === 'email' ? (
-                            <a style={{
-                                textDecoration: 'none',
-                                color: '#1e90ff',
-                                fontSize: '1.5rem',
-                                wordBreak: 'break-all',
-                            }} href={`mailto:${codeBucket?.content}`}>{codeBucket?.content}</a>
-                        ) : (
-                            <div style={{
-                                // Style as a input but disabled
-                                border: '1px solid #1e90ff',
-                                borderRadius: '8px',
-                                padding: '1rem',
-                                marginTop: '1rem',
-                                color: '#1e90ff',
-                                fontSize: '1.5rem',
-                                wordBreak: 'break-all',
-                                backgroundColor: 'rgb(218, 203, 203)',
-                                cursor: 'default'
-                            }}>
-                                <Typography variant="h4" gutterBottom style={{ marginTop: '1rem' }}>
-                                    {codeBucket?.content}
-                                </Typography>
-                            </div>
-                        )} */}
+            <Container maxWidth="md">
+                <Typography variant="h4" gutterBottom>
+                    Create a Bucket
+                </Typography>
+                <div className="form">
+                    <TextField
+                        name="title"
+                        label="Title"
+                        variant="outlined"
+                        fullWidth
+                        sx={{ marginBottom: "1rem" }}
+                        onChange={handleInputChange}
+                    />
+                    <TextField
+                        name="data"
+                        label="Data"
+                        variant="outlined"
+                        fullWidth
+                        multiline
+                        rows={4}
+                        sx={{ marginBottom: "1rem" }}
+                        onChange={handleInputChange}
+                    />
+                    <Button type="submit" variant="contained" color="primary"
+                        onClick={handleCreation}
+                    >
+                        {/* Create Bucket */}
+                        <AddIcon />
+                        Create
+                    </Button>
+                </div>
+                <br />
+                <br />
 
-                        <div style={{
-                            border: '1px solid #1e90ff',
-                            borderRadius: '8px',
-                            padding: '1rem',
-                            marginTop: '1rem',
-                            color: '#1e90ff',
-                            fontSize: '1.5rem',
-                            wordBreak: 'break-all',
-                            backgroundColor: 'rgb(218, 203, 203)',
-                        }}>
-                            <Typography variant="h4" gutterBottom style={{ marginTop: '1rem' }}>
-                                {replaceUrls(codeBucket?.content)}
-                            </Typography>
-                        </div>
-
-                        <Tooltip title="Copy Content" arrow>
-                            <IconButton
-                                onClick={() => handleCopyCode(codeBucket?.content)}
-                                color="primary"
-                                style={{ marginTop: '0px' }}
-                            >
-                                <BsClipboard size={25} />
-                            </IconButton>
-                        </Tooltip>
-                    </Paper>
-                </Container>
-            ) : ((code && !notexist) ? (
-                <h3 style={{ textAlign: 'center' }}>Loading...</h3>
-            ) : (
-                <Container maxWidth="md">
+                <form
+                    onSubmit={() => {
+                        navigate(`/bucket/${retriveCode}`);
+                        window.location.reload();
+                    }}>
+                    {/* Add Input box for entering code and go to bucket details from code */}
                     <Typography variant="h4" gutterBottom>
-                        Create a Bucket
+                        Retrieve a Bucket
                     </Typography>
-                    <div className="form">
-                        <TextField
-                            name="title"
-                            label="Title"
-                            variant="outlined"
-                            fullWidth
-                            sx={{ marginBottom: "1rem" }}
-                            onChange={handleInputChange}
-                        />
-                        <TextField
-                            name="data"
-                            label="Data"
-                            variant="outlined"
-                            fullWidth
-                            multiline
-                            rows={4}
-                            sx={{ marginBottom: "1rem" }}
-                            onChange={handleInputChange}
-                        />
-                        <Button type="submit" variant="contained" color="primary"
-                            onClick={handleCreation}
-                        >
-                            {/* Create Bucket */}
-                            <AddIcon />
-                            Create
-                        </Button>
-                    </div>
-
-                    <div>
-                        {/* Add Input box for entering code and go to bucket details from code */}
-                        <Typography variant="h4" gutterBottom>
-                            Retrieve a Bucket
-                        </Typography>
-                        <TextField
-                            name="code"
-                            label="Code"
-                            variant="outlined"
-                            fullWidth
-                            sx={{ marginBottom: "1rem" }}
-                            onChange={handleCodeChange}
-                        />
-                        <Button type="submit" variant="contained" color="primary"
-                            onClick={() => {
-                                navigate(`/bucket?code=${retriveCode}`);
-                                window.location.reload();
-                            }}
-                        >
-                            Retrieve
-                        </Button>
-                    </div>
-                </Container>
-            ))
-            }
-
+                    <TextField
+                        name="code"
+                        label="Code"
+                        variant="outlined"
+                        fullWidth
+                        sx={{ marginBottom: "1rem" }}
+                        onChange={handleCodeChange}
+                    />
+                    <Button type="submit" variant="contained" color="primary"
+                        onClick={() => {
+                            navigate(`/bucket/${retriveCode}`);
+                            window.location.reload();
+                        }}
+                    >
+                        Retrieve
+                    </Button>
+                </form>
+            </Container>
         </div >
     );
 };

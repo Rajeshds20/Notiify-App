@@ -6,6 +6,7 @@ import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
 import HomePage from './pages/Home';
 import BucketPage from './pages/Bucket';
+import BucketView from './pages/BucketView';
 import NotFoundPage from './pages/NotFound';
 
 function App() {
@@ -34,6 +35,10 @@ function App() {
     {
       path: '/bucket',
       element: <BucketPage user={user} />,
+    },
+    {
+      path: '/bucket/:key',
+      element: <BucketView user={user} />,
     },
     {
       path: '/*',
